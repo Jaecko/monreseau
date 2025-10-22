@@ -1,20 +1,22 @@
-### 1\. Roadmap de Développement (Markdown - V6)
-
-_La V1 reste concentrée sur le MVP. Le nouveau "Branding Dynamique" est ajouté à la V2.0, car il utilise les mêmes données que la "Marque Blanche"._
-
-# Roadmap de Développement - Projet "MonReseau" (V6)
+# Roadmap de Développement - Projet "MonReseau" (V7)
 
 ## V1.0 : Le MVP (Objectif : 8-9 Semaines)
 
-_Objectif : Lancer un produit fonctionnel avec notifications temps réel, paiement, création de réseau, et discussions._
+### 
+
+_Objectif : Lancer une plateforme **communautaire** fonctionnelle. Créer la fondation (le "contenant") avant de prouver le ROI (le "contenu")._
+
+_(Pas de changement sur le MVP, on reste concentré.)_
 
 * * *
 
 ### Phase 1 : Fondation Technique & Authentification (Semaines 1-2)
 
--   \[ \] **Docker :** Mettre en place `docker-compose.yml` (Nginx, Backend, DB, Redis, MailHog, **Reverb**).
+### 
+
+-   \[ \] **Docker :** `docker-compose.yml` (Nginx, Backend, DB, Redis, MailHog, **Reverb**).
     
--   \[ \] **Backend :** Configurer **Laravel Reverb** (le serveur WebSocket).
+-   \[ \] **Backend :** Configurer **Laravel Reverb**.
     
 -   \[ \] **Projets :** Initialiser Laravel (`backend`) et Vue.js (`frontend`).
     
@@ -24,58 +26,60 @@ _Objectif : Lancer un produit fonctionnel avec notifications temps réel, paieme
     
 -   \[ \] **Base de Données (Préparation V2) :** Ajouter la colonne `branding` (JSON, nullable) à la table `networks`.
     
--   \[ \] **API :** Implémenter **Laravel Sanctum**. Créer les routes `/api/register` et `/api/login`.
-    
--   \[ \] **Frontend :** Créer les pages `Login.vue`, `Register.vue` et le store **Pinia** pour l'authentification.
-    
 
 * * *
 
 ### Phase 2 : Logique SaaS & Paiement (Semaines 3-4)
 
--   \[ \] **Backend :** Installer et configurer **Laravel Cashier** (Stripe).
+### 
+
+-   \[ \] **Backend :** Installer **Laravel Cashier** (Stripe).
     
--   \[ \] **Backend :** Implémenter l'**Architecture Modulaire** (champ `features` JSON sur le modèle `Plan`).
+-   \[ \] **Backend :** Implémenter le champ `features` (JSON) sur le modèle `Plan`.
     
--   \[ \] **Frontend :** Créer la page `CreateNetwork.vue` avec le sélecteur de plan et le formulaire **Stripe.js**.
+-   \[ \] **Frontend :** Créer la page `CreateNetwork.vue` (Sélecteur de plan + Formulaire Stripe.js).
     
--   \[ \] **API :** Créer la route `POST /api/subscribe` (création du `Network` + Abonnement Cashier).
+-   \[ \] **API :** Créer la route `POST /api/subscribe`.
     
--   \[ \] **Frontend :** Portail de facturation (via redirection vers le "Customer Portal" de Stripe/Cashier).
+-   \[ \] **Frontend :** Portail de facturation (Redirection "Customer Portal" de Stripe).
     
 
 * * *
 
 ### Phase 3 : Logique Multi-Réseau (Semaine 5)
 
--   \[ \] **API :** Mettre à jour l'API `/login` pour qu'elle renvoie la liste des `networks` de l'utilisateur.
+### 
+
+-   \[ \] **API :** Mettre à jour l'API `/login` (renvoyer `user.networks[]`).
     
 -   \[ \] **Frontend :** Créer la page `SelectNetwork.vue`.
     
--   \[ \] **Frontend :** Implémenter le **Navigation Guard** (Router Vue) pour rediriger si `networks.length > 1`.
+-   \[ \] **Frontend :** Implémenter le **Navigation Guard** (Router Vue) pour la sélection de réseau.
     
--   \[ \] **Backend :** Créer le **Middleware** `EnsureUserBelongsToNetwork` pour sécuriser les routes de l'API.
+-   \[ \] **Backend :** Créer le **Middleware** `EnsureUserBelongsToNetwork`.
     
--   \[ \] **Frontend :** Implémenter l'intercepteur Axios pour envoyer le header `X-Network-ID` à chaque requête.
+-   \[ \] **Frontend :** Implémenter l'intercepteur Axios (header `X-Network-ID`).
     
 
 * * *
 
-### Phase 4 : Fonctionnalités de Base (Semaine 6)
+### Phase 4 : Fonctionnalités Communautaires (Semaine 6)
 
--   \[ \] **Backend :** Créer le modèle `Post` (lié à `user_id` et `network_id`).
+### 
+
+-   \[ \] **Backend :** Créer le modèle `Post`.
     
 -   \[ \] **API :** Créer les routes CRUD pour les `Post`.
     
--   \[ \] **Frontend :** Créer le composant `Feed.vue` (fil d'actualité) et le formulaire de création de post.
+-   \[ \] **Frontend :** Créer le composant `Feed.vue`.
     
--   \[ \] **Backend :** Implémenter **Laravel Notifications** (canaux `database`, `mail`, et **`broadcast`** via Reverb).
+-   \[ \] **Backend :** Implémenter **Laravel Notifications** (canaux `database`, `mail`, **`broadcast`**).
     
--   \[ \] **Backend :** Définir les `routes/channels.php` pour sécuriser les WebSockets.
+-   \[ \] **Backend :** Définir les `routes/channels.php` (sécurisation WebSocket).
     
 -   \[ \] **Frontend :** Installer et configurer **Laravel Echo** (client WebSocket).
     
--   \[ \] **Frontend :** Écouter les notifications en temps réel et les ajouter au store Pinia (mise à jour de la cloche 🔔 sans rafraîchissement).
+-   \[ \] **Frontend :** Implémenter la cloche 🔔 de notification en temps réel.
     
 -   \[ \] **Backend :** Mettre en place les **Queues** (Redis) pour l'envoi d'emails.
     
@@ -84,76 +88,84 @@ _Objectif : Lancer un produit fonctionnel avec notifications temps réel, paieme
 
 ### Phase 5 : Solidification (Semaine 7)
 
--   \[ \] **Backend :** Implémenter le flux sécurisé de **Transfert de Propriété/Facturation** (le flux en 6 étapes).
+### 
+
+-   \[ \] **Backend :** Implémenter le flux sécurisé de **Transfert de Propriété/Facturation**.
     
--   \[ \] **Backend :** Ajouter le support pour les paiements **SEPA** (domiciliation) via Cashier.
+-   \[ \] **Backend :** Ajouter le support **SEPA** (domiciliation) via Cashier.
     
--   \[ \] **Backend/Frontend :** Affiner la gestion des rôles (inviter un 'admin', 'membre').
+-   \[ \] **Backend/Frontend :** Gestion des rôles (inviter 'admin', 'membre').
     
--   \[ \] **Backend :** Mettre en place le **Logging** (configurer Sentry pour la production).
+-   \[ \] **Backend :** Mettre en place le **Logging** (Sentry).
     
 
 * * *
 
 ### Phase 6 : Packaging Mobile & Déploiement CI/CD (Semaines 8-9)
 
--   \[ \] **DevOps :** Configurer l'infrastructure de production (Serveur chez Scaleway/OVH, BDD managée, Bucket S3).
+### 
+
+-   \[ \] **DevOps :** Configurer l'infrastructure de production (Serveur, BDD Managée, Bucket S3).
     
--   \[ \] **DevOps :** Configurer **Ploi.io** ou **Render.com** pour le déploiement.
+-   \[ \] **DevOps :** Configurer **Ploi.io** ou **Render.com**.
     
--   \[ \] **CI/CD :** Mettre en place **GitHub Actions** pour la **CI** (Intégration Continue).
+-   \[ \] **CI/CD :** Mettre en place **GitHub Actions** pour la **CI** (tests auto).
     
--   \[ \] **CI/CD :** Configurer la **CD** (Déploiement Continu).
+-   \[ \] **CI/CD :** Configurer la **CD** (déploiement auto).
     
 -   \[ \] **Mobile :** Ajouter **Capacitor** au projet Vue.js.
     
--   \[ \] **Mobile :** Générer les builds iOS et Android et tester sur simulateurs.
+-   \[ \] **Mobile :** Générer les builds iOS et Android (tests simulateurs).
     
--   \[ \] **Mobile :** Implémenter la logique de _masquage_ des paiements dans l'app mobile (redirection vers le web).
+-   \[ \] **Mobile :** Implémenter la logique de _masquage_ des paiements.
     
 -   \[ \] **LANCEMENT V1.0 !** 🚀
     
 
 * * *
 
-## V2.0 : Évolution "Premium" (Après le lancement)
+## V2.0 : Évolution "Business & Premium" (Après le lancement)
 
-_Objectif : Augmenter la valeur perçue, justifier les plans supérieurs et améliorer la rétention._
+### 
 
+_Objectif : Prouver le ROI du réseau et augmenter la valeur des plans supérieurs._
+
+-   \[ \] **Module "Opportunity Tracker" (La Killer Feature) :**
+    
+    -   \[ \] **Backend :** Créer la table `opportunities` (`network_id`, `from_user_id`, `to_user_id`, `description`, `contact_name`, `status`, `value`).
+        
+    -   \[ \] **Backend :** Créer les routes API CRUD pour les opportunités (sécurisées).
+        
+    -   \[ \] **Backend :** Activer la fonctionnalité via le `feature_flag` "opportunity\_tracker".
+        
+    -   \[ \] **Backend :** Envoyer une notification (via Reverb) lors de la création.
+        
+    -   \[ \] **Frontend :** Créer la page "Opportunités" (vues "Reçues" / "Envoyées").
+        
+    -   \[ \] **Frontend :** Créer le formulaire de création d'opportunité.
+        
+    -   \[ \] **Frontend :** Permettre au destinataire de changer le statut (`Gagné`/`Perdu`) et d'ajouter la `value`.
+        
+    -   \[ \] **Backend/Frontend :** Créer le **Dashboard Admin** qui agrège le `SUM(value)` pour le chef de réseau.
+        
 -   \[ \] **Module "Branding Stratifié" (Pro & Enterprise) :**
     
-    -   \[ \] **Backend :** Mettre à jour le champ `plans.features` pour inclure `"dynamic_branding": true` ou `"white_label_app": true`.
+    -   \[ \] **Backend :Un** `feature_flag` "dynamic\_branding" / "white\_label\_app".
         
-    -   \[ \] **Backend :** Créer une UI "Admin Réseau" pour que les owners puissent remplir leurs données de `branding` (couleurs, logo) dans la table `networks`.
+    -   \[ \] **Frontend (Plan Pro) :** Implémenter un **"Theme Manager"** qui applique le branding (CSS Custom Properties) dynamiquement.
         
-    -   \[ \] **Frontend (Plan Pro) :** Implémenter un **"Theme Manager"** dans Vue.
+    -   \[ \] **DevOps (Plan Enterprise) :** Créer le "Script d'Usine" (Build Factory) pour les applications en marque blanche.
         
-        -   \[ \] Quand un utilisateur sélectionne un réseau, vérifier si `dynamic_branding` est actif.
-            
-        -   \[ \] Si oui, charger les couleurs/logo depuis l'API et les injecter dynamiquement via des **CSS Custom Properties** (`:root { --primary-color: ... }`).
-            
-    -   \[ \] **DevOps (Plan Enterprise) :**
-        
-        -   \[ \] Créer le "Script d'Usine" (Build Factory) qui lit ces mêmes données de `branding` pour configurer `capacitor.config.json` et générer les icônes/splash screens.
-            
-        -   \[ \] Mettre à jour la CI/CD pour permettre la compilation de ces applications en marque blanche.
-            
 -   \[ \] **Module "Gamification" :**
     
-    -   \[ \] Backend : Système de points et de `Badges` (via Events/Listeners).
-        
-    -   \[ \] Frontend : Interface pour voir ses points et badges (activée par `feature_flag`).
+    -   \[ \] Backend : Système de points et de `Badges` (ex: "Meilleur apporteur d'affaires").
         
 -   \[ \] **Module "Notifications Push Mobiles" :**
     
-    -   \[ \] Backend : Ajouter le canal `push` (via Firebase) à Laravel Notifications.
+    -   \[ \] Backend : Ajouter le canal `push` (Firebase) à Laravel Notifications.
         
     -   \[ \] Mobile : Implémenter le plugin **Capacitor Push Notifications**.
         
 -   \[ \] **Module "Analytics" :**
     
-    -   \[ \] Backend : Créer les **Tâches Planifiées (Cron)** pour générer des rapports.
-        
-    -   \[ \] Backend : Envoyer des rapports par email via **Notifications Serveur**.
-        
-    -   \[ \] Frontend : Créer un tableau de bord simple pour les "owners" (activé par `feature_flag`).
+    -   \[ \] Backend : Tâches planifiées (Cron) pour rapports d'engagement.

@@ -1,18 +1,18 @@
-# Roadmap de Développement - Projet "MonReseau" (V7)
+### 1\. Le Fichier Roadmap (`Roadmap.md`)
+
+# Roadmap de Développement - Projet "MonReseau" (V8)
 
 ## V1.0 : Le MVP (Objectif : 8-9 Semaines)
 
-### 
+# 
 
 _Objectif : Lancer une plateforme **communautaire** fonctionnelle. Créer la fondation (le "contenant") avant de prouver le ROI (le "contenu")._
 
-_(Pas de changement sur le MVP, on reste concentré.)_
-
-* * *
+_(La V1 reste focalisée et inchangée.)_
 
 ### Phase 1 : Fondation Technique & Authentification (Semaines 1-2)
 
-### 
+# 
 
 -   \[ \] **Docker :** `docker-compose.yml` (Nginx, Backend, DB, Redis, MailHog, **Reverb**).
     
@@ -27,11 +27,9 @@ _(Pas de changement sur le MVP, on reste concentré.)_
 -   \[ \] **Base de Données (Préparation V2) :** Ajouter la colonne `branding` (JSON, nullable) à la table `networks`.
     
 
-* * *
-
 ### Phase 2 : Logique SaaS & Paiement (Semaines 3-4)
 
-### 
+# 
 
 -   \[ \] **Backend :** Installer **Laravel Cashier** (Stripe).
     
@@ -44,11 +42,9 @@ _(Pas de changement sur le MVP, on reste concentré.)_
 -   \[ \] **Frontend :** Portail de facturation (Redirection "Customer Portal" de Stripe).
     
 
-* * *
-
 ### Phase 3 : Logique Multi-Réseau (Semaine 5)
 
-### 
+# 
 
 -   \[ \] **API :** Mettre à jour l'API `/login` (renvoyer `user.networks[]`).
     
@@ -61,11 +57,9 @@ _(Pas de changement sur le MVP, on reste concentré.)_
 -   \[ \] **Frontend :** Implémenter l'intercepteur Axios (header `X-Network-ID`).
     
 
-* * *
-
 ### Phase 4 : Fonctionnalités Communautaires (Semaine 6)
 
-### 
+# 
 
 -   \[ \] **Backend :** Créer le modèle `Post`.
     
@@ -84,11 +78,9 @@ _(Pas de changement sur le MVP, on reste concentré.)_
 -   \[ \] **Backend :** Mettre en place les **Queues** (Redis) pour l'envoi d'emails.
     
 
-* * *
-
 ### Phase 5 : Solidification (Semaine 7)
 
-### 
+# 
 
 -   \[ \] **Backend :** Implémenter le flux sécurisé de **Transfert de Propriété/Facturation**.
     
@@ -99,11 +91,9 @@ _(Pas de changement sur le MVP, on reste concentré.)_
 -   \[ \] **Backend :** Mettre en place le **Logging** (Sentry).
     
 
-* * *
-
 ### Phase 6 : Packaging Mobile & Déploiement CI/CD (Semaines 8-9)
 
-### 
+# 
 
 -   \[ \] **DevOps :** Configurer l'infrastructure de production (Serveur, BDD Managée, Bucket S3).
     
@@ -122,35 +112,35 @@ _(Pas de changement sur le MVP, on reste concentré.)_
 -   \[ \] **LANCEMENT V1.0 !** 🚀
     
 
-* * *
-
 ## V2.0 : Évolution "Business & Premium" (Après le lancement)
 
-### 
+# 
 
 _Objectif : Prouver le ROI du réseau et augmenter la valeur des plans supérieurs._
 
--   \[ \] **Module "Opportunity Tracker" (La Killer Feature) :**
+-   \[ \] **Module "Opportunités & Validation Croisée" (La Killer Feature) :**
     
-    -   \[ \] **Backend :** Créer la table `opportunities` (`network_id`, `from_user_id`, `to_user_id`, `description`, `contact_name`, `status`, `value`).
+    -   \[ \] **Backend :** Créer la table `opportunities` avec les statuts (`Sent`, `In Progress`, `Pending Confirmation`, `Confirmed`, `Disputed`, `Lost`).
         
-    -   \[ \] **Backend :** Créer les routes API CRUD pour les opportunités (sécurisées).
+    -   \[ \] **Backend :** Créer les routes API pour créer, lister, et gérer le flux de validation (`confirm`, `dispute`).
         
     -   \[ \] **Backend :** Activer la fonctionnalité via le `feature_flag` "opportunity\_tracker".
         
-    -   \[ \] **Backend :** Envoyer une notification (via Reverb) lors de la création.
+    -   \[ \] **Backend :** Envoyer une notification (via Reverb) au "Receveur" (création) et au "Donneur" (demande de confirmation).
+        
+    -   \[ \] **Backend :** Créer un **Event/Listener** (`OpportunityConfirmed`) qui se déclenche quand le statut passe à `Confirmed`.
+        
+    -   \[ \] **Backend :** Le Listener doit : 1. Attribuer les points de gamification. 2. **Auto-publier un `Post`** (sans montant) sur le fil d'actu pour la reconnaissance sociale.
         
     -   \[ \] **Frontend :** Créer la page "Opportunités" (vues "Reçues" / "Envoyées").
         
-    -   \[ \] **Frontend :** Créer le formulaire de création d'opportunité.
+    -   \[ \] **Frontend :** Implémenter le flux : 1. `User A` crée. 2. `User B` passe en `Pending` + ajoute `value`. 3. `User A` reçoit une notif et clique sur "Confirmer".
         
-    -   \[ \] **Frontend :** Permettre au destinataire de changer le statut (`Gagné`/`Perdu`) et d'ajouter la `value`.
-        
-    -   \[ \] **Backend/Frontend :** Créer le **Dashboard Admin** qui agrège le `SUM(value)` pour le chef de réseau.
+    -   \[ \] **Backend/Frontend :** Créer le **Dashboard Admin** qui agrège le `SUM(value)` des opportunités `Confirmed` pour le chef de réseau.
         
 -   \[ \] **Module "Branding Stratifié" (Pro & Enterprise) :**
     
-    -   \[ \] **Backend :Un** `feature_flag` "dynamic\_branding" / "white\_label\_app".
+    -   \[ \] **Backend :** `feature_flag` "dynamic\_branding" / "white\_label\_app".
         
     -   \[ \] **Frontend (Plan Pro) :** Implémenter un **"Theme Manager"** qui applique le branding (CSS Custom Properties) dynamiquement.
         
@@ -158,7 +148,7 @@ _Objectif : Prouver le ROI du réseau et augmenter la valeur des plans supérieu
         
 -   \[ \] **Module "Gamification" :**
     
-    -   \[ \] Backend : Système de points et de `Badges` (ex: "Meilleur apporteur d'affaires").
+    -   \[ \] Backend : Système de `Badges` (ex: "Meilleur apporteur d'affaires"), lié aux événements de l'application.
         
 -   \[ \] **Module "Notifications Push Mobiles" :**
     

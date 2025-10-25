@@ -1,10 +1,10 @@
 Salut Copilot. Nous allons construire ensemble une application SaaS complexe. Voici le cahier des charges complet (notre "master plan"). Je te demanderai de générer du code, fichier par fichier, en te basant sur cette architecture.
 
-### 1. Objectif du Projet : "MonReseau"
+### 1. Objectif du Projet : "MonReseau" (Nom Provisoire)
 
 -   **Produit :** Une application (Web + Mobile) pour la création de réseaux sociaux privés pour les réseaux d'entrepreneurs.
 -   **Business Model :** SaaS avec 3 niveaux de plans (Standard, Pro, Enterprise).
--   **Différenciateur Clé (V2) :** Un **"Tracker d'Opportunités"** pour permettre aux membres de s'échanger des leads et de prouver le ROI financier du réseau.
+-   **Différenciateur Clé (V2) :** Un **système de validation croisée** pour les opportunités d'affaires. L'objectif est de prouver le ROI financier du réseau grâce à la reconnaissance sociale et à la confirmation mutuelle, et non à l'auto-déclaration.
 -   **Multi-Tenancy :** L'application est multi-tenant. La donnée est cloisonnée par `network_id`.
 -   **Multi-Profil :** Un `User` peut appartenir à plusieurs `Network`.
 
@@ -46,34 +46,42 @@ Nous utilisons `docker-compose.yml` avec 6 services :
 -   `notifications` : Table standard de Laravel Notifications.
 -   `opportunities` (Table V2 - Clé du projet) :
     -   `network_id` (FK `networks`)
-    -   `from_user_id` (FK `users`)
-    -   `to_user_id` (FK `users`)
+    -   `from_user_id` (FK `users`, le "Donneur")
+    -   `to_user_id` (FK `users`, le "Receveur")
     -   `contact_name` (string)
     -   `description` (text)
-    -   `status` (enum: 'Sent', 'In Progress', 'Won', 'Lost', 'Archived') - Default: 'Sent'.
-    -   `value` (decimal, 10, 2, nullable) : Montant du deal si `Won`.
+    -   `status` (enum: 'Sent', 'In Progress', **'Pending Confirmation'**, **'Confirmed'**, 'Disputed', 'Lost', 'Archived') - Default: 'Sent'.
+    -   `value` (decimal, 10, 2, nullable) : Montant du deal si `Confirmed`.
 
 ### 5. Logique Métier & Fonctionnalités Clés
 
-1.  **Flux d'Authentification (Login) :** (Identique)
+1.  **Flux d'Authentification (Login) :** (Standard)
     -   L'API `POST /api/login` renvoie le `user` et `user.networks[]`.
     -   Le Frontend gère la redirection (`SelectNetwork.vue` si > 1 réseau).
 
-2.  **Cloisonnement des Données (Multi-Tenancy) :** (Identique)
+2.  **Cloisonnement des Données (Multi-Tenancy) :** (Standard)
     -   Le Frontend envoie le header `X-Network-ID`.
     -   Le Backend vérifie l'appartenance avec le **Middleware** `EnsureUserBelongsToNetwork`.
 
-3.  **Flux d'Abonnement (SaaS) :** (Identique)
+3.  **Flux d'Abonnement (SaaS) :** (Standard)
     -   `POST /api/subscribe` crée le `Network`, abonne le `Network` à Cashier, et lie le `User` comme 'owner'.
 
-4.  **Module "Opportunity Tracker" (V2) :**
+4.  **Module "Opportunity Tracker" (V2) - Logique de Validation Croisée :**
     -   Cette fonctionnalité est protégée par le `feature_flag` "opportunity_tracker".
-    -   Un `User A` peut créer une `Opportunity` pour un `User B` (du même réseau).
-    -   `User B` reçoit une notification (via Reverb) et peut mettre à jour le `status`.
-    -   Si `status` = 'Won', `User B` peut renseigner la `value`.
-    -   Un `Owner` (admin) a accès à une route API (ex: `GET /api/analytics/opportunities`) qui renvoie le `SUM(value)` et le `COUNT()` par statut pour son `network_id`.
+    -   `User A` (Donneur) crée une `Opportunity` pour `User B` (Receveur). Statut = `Sent`. `User B` est notifié (via Reverb).
+    -   `User B` peut changer le statut. S'il choisit `Won`, le statut passe à `Pending Confirmation` et il **doit** saisir une `value`.
+    -   Le système notifie (via Reverb) `User A` (le Donneur).
+    -   `User A` voit l'opportunité et doit "Confirmer" ou "Discuter" (`Disputed`).
+    -   **Si `User A` confirme :**
+        1.  Le statut passe à `Confirmed`.
+        2.  Le backend déclenche un `Event` (ex: `OpportunityConfirmed`).
+        3.  Un `Listener` capture cet event et :
+            a. Attribue les points de gamification à A et B.
+            b. **Auto-publie un `Post`** (sans montant) sur le fil d'actualité pour la reconnaissance sociale (ex: "[User B] a gagné une affaire grâce à [User A]").
+    -   **Dashboard Admin :** L'Admin du réseau a accès à une route API qui renvoie le `SUM(value)` et le `COUNT()` des opportunités `Confirmed` pour son `network_id`.
+    -   **Confidentialité :** Le `value` reste toujours privé (visible seulement par A, B, et les Admins du réseau).
 
-5.  **Logique de Branding Stratifié (V2) :** (Identique)
+5.  **Logique de Branding Stratifié (V2) :** (Standard)
     -   **Plan Pro :** `dynamic_branding: true`. Le Frontend (Vue) applique le thème (CSS) en fonction du `network.branding` sélectionné.
     -   **Plan Enterprise :** `white_label_app: true`. Un "Script d'Usine" (CI/CD) compile une app mobile dédiée en utilisant ces mêmes données.
 
@@ -81,10 +89,10 @@ Nous utilisons `docker-compose.yml` avec 6 services :
     -   Canaux `database`, `mail` (via Queues), et **`broadcast`** (via **Reverb**).
     -   Le Frontend (Vue) utilise **Laravel Echo** pour l'écoute en temps réel.
 
-7.  **Transfert de Propriété (Sécurisé - V1) :** (Identique)
+7.  **Transfert de Propriété (Sécurisé - V1) :** (Standard)
     -   Flux en 6 étapes : Initier -> Générer `token` -> Email -> Accepter + Payer -> Finaliser (`swap()` Cashier).
 
-8.  **Paiements Mobiles (Capacitor - V1) :** (Identique)
+8.  **Paiements Mobiles (Capacitor - V1) :** (Standard)
     -   **PAS** d'IAP. On utilise le **Capacitor Browser plugin** pour ouvrir la page de paiement Stripe.
 
 ### 6. DevOps (CI/CD - V1)
